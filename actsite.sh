@@ -19,6 +19,7 @@ EO
 f1=qa # fenix.3red
 f2=qd # logo-dark.2reds
 f3=qc # fenix.5cor
+f4=qe # fat-logo-dark.2reds
 
 l1=ca # logo-light-red-byfenixdecorare
 l2=cb # logo-light-bw-byfenixdecorare
@@ -29,8 +30,9 @@ i1=ea # cesto-compras
 # operation dirs & output dirs for apps (loja e comunidade)
 w="/home/hernani/Documents"
 b="$w/fenix-brand/base"
-i="$w/fenix-brand/svg"
+m="$w/fenix-brand/svg"
 o="$w/fenix-brand/png"
+v="$w/fenix-brand/jpg"
 c="$w/fenix-brand/comp"
 t="$w/fenix-brand/tmp"
 f="$w/fenix-brand/fotos"
@@ -43,9 +45,8 @@ s="$w/as3w/fenix/$j/app/assets/stylesheets/$j"
 z="$h/app/assets"
 x="$h/vendor/assets"
 n="$z/stylesheets/$i"
-k=all
 
-SOPTS="hl"
+SOPTS="h"
 LOPTS=""
 
 ARGS=$(getopt -a -o $SOPTS --name $PROGNAME -- "$@")
@@ -55,7 +56,6 @@ eval set -- "$ARGS"
 while true; do
     case $1 in
     -h)   usage ; exit 0;;
-    -l) k=fdbr; shift;;
     --)  shift  ; break;;
     *)   shift  ; break;;
     esac
@@ -63,25 +63,25 @@ while true; do
 done
 
 # loja.fenix
-if [ $k = all -o $k = fdbr ]
-then 
-
 if [ ! -d $z/images/logo    ];then mkdir $z/images/logo   ;fi
 if [ ! -d $x/images/noimage ];then mkdir $x/images/noimage;fi
 
-cp $o/logo-loja-casadosquadros.png       $z/images/logo
-cp $o/logo-loja-casadosquadros-admin.png $z/images/logo
+# frontend tem svg logo
+cp $v/logo-loja-casadosquadros.jpg       $z/images/logo
+cp $v/logo-loja-casadosquadros-admin.jpg $z/images/logo
+cp $m/logo-loja-casadosquadros.svgz      $z/images/logo
 cp $o/product.png                        $x/images/noimage
 cp $o/large.png                          $x/images/noimage
 cp $o/small.png                          $x/images/noimage
 cp $o/mini.png                           $x/images/noimage
-cp $o/cart.png                           $x/images/spree/frontend
-cp $o/favicon.ico                        $x/images
-cp $o/favicon.ico                        $h/public
-#cp $o/$l1-ga.png                         $h/public/google-api-logo.png
+cp $o/favicon.ico                        $z/images
+cp $o/$f2-????.png                       $z/images
+cp $o/$f4-????.png                       $z/images
 cp $o/apple-touch-icon.png               $z/images
 cp $o/icon_128.gif                       $z/images
-cp $o/$f2-*.png                          $z/images
+
+# Imagens sem asset controle
+cp $o/logo-loja-casadosquadros.png       $h/public
 cp $o/$f2-0120.png                       $h/public
 
 # frontend skeleon scss
@@ -100,10 +100,3 @@ if [ ! -d $x/stylesheets/$j/globals ];then mkdir $x/stylesheets/$j/globals;fi
 cp $s/spree_admin.scss          $x/stylesheets/$j
 $w/fenix-brand/preppng.sh -n  > $x/stylesheets/$j/globals/_variables_override.scss
 $w/fenix-brand/preppng.sh -a >> $x/stylesheets/$j/spree_admin.scss
-
-fi
-
-# comunidade.fenix
-#if [ $k = all -o $k = cfbr ]
-#then 
-#fi

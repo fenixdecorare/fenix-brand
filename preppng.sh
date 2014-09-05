@@ -12,6 +12,7 @@ currentsvgcolors()
 #              the inkscape svg format is necessary for this script
 #              the fill:<color> format is used in this script
 #              optionaly you can save as plain svg (inkscape gui)
+# [IMPORTANTE] svgz em aws precisam content-encoding http header set to gzip
 
 # Numero total de cores no palette fenix (USADO EM TODO SCRIPT)
 j=0 
@@ -164,17 +165,17 @@ optsvgs()
 echo "Optimize svgs in $b"
 for f in `ls $b`
 do ts=`date "+%Y%m%d%H%M%S"`
-   echo "Processar $f backup saved in $i/s$ts-$f"
-   cp $b/$f $i/s$ts-$f
-   inkscape -l $b/$f $i/s$ts-$f
+   echo "Processar $f backup saved in $t/s$ts-$f"
+   cp $b/$f $t/s$ts-$f
+   inkscape -l $b/$f $t/s$ts-$f
 done
 
 echo "Optimize svgs in $c"
 for f in `ls $c`
 do ts=`date "+%Y%m%d%H%M%S"`
-   echo "Processar $f backup saved in $i/s$ts-$f"
-   cp $c/$f $i/s$ts-$f
-   inkscape -l $c/$f $i/s$ts-$f
+   echo "Processar $f backup saved in $t/s$ts-$f"
+   cp $c/$f $t/s$ts-$f
+   inkscape -l $c/$f $t/s$ts-$f
 done
 }
 
@@ -382,9 +383,6 @@ frontend-variables-bootstrap()
 valpal
 
 cat << EOF
-
-\$icon-font-path: "../../bootstrap/";
-
 \$brand-primary:      ${vco[5]};
 \$brand-success:      ${vco[5]};
 \$brand-info:         ${vco[7]};
@@ -410,6 +408,7 @@ cat << EOF
 \$font-family-serif:      "Ubuntu", serif;
 \$font-family-monospace:  "Ubuntu Mono", monospace;
 
+@import "bootstrap-sprockets";
 @import "bootstrap";
 
 @mixin fenix-button-variant(\$cor) {
@@ -433,16 +432,6 @@ cat << EOF
 }
 .btn-success {
   @include fenix-button-variant(\$brand-red3);
-}
-
-#spree-header {
-  margin-bottom: \$line-height-computed;
-}
-#spree-footer {
-  margin-top: \$line-height-computed;
-}
-.progress-steps {
-  margin-top: \$line-height-computed;
 }
 EOF
 
@@ -638,6 +627,7 @@ fi
 f1=qa # fenix.3red
 f2=qd # logo-dark.2reds
 f3=qc # fenix.5cor
+f4=qe # fat-logo-dark.2reds
 
 l1=ca # logo-light-red-byfenixdecorare
 l2=cb # logo-light-bw-byfenixdecorare
@@ -651,6 +641,7 @@ i=svg
 o=png
 c=comp
 t=tmp
+v=jpg
 
 # obter cores actuais nos svgs para processar alteracao
 # aco[03-09] calculadas a partir de c_fenix
@@ -740,73 +731,105 @@ fi
      
 fi
 
+#Usada para conversao -> png & jpg optimizadas
+cpng="-strip -quality 75% -sampling-factor 4:2:0"
+cjpg="-background white -flatten -interlace Line $cpng"
+
 echo "Basic color palette for fenix"
 r1="puts Color::RGB.from_html('$c_fenix')"
 echo "`ruby -r color -e \"$r1.css_hsl\"`;`ruby -r color -e \"$r1.css_rgb\"`"
-# Diaspora pod needs apple-touch-icon.png,icon_128.gif,favicon.ico
-rsvg-convert -h 16   -a -f png $b/$f2.svg -o $o/$f2-0016.png
-rsvg-convert -h 32   -a -f png $b/$f2.svg -o $o/$f2-0032.png
-rsvg-convert -h 48   -a -f png $b/$f2.svg -o $o/$f2-0048.png
-rsvg-convert -h 64   -a -f png $b/$f2.svg -o $o/$f2-0064.png
-rsvg-convert -h 75   -a -f png $b/$f2.svg -o $o/$f2-0075.png # facebook app
-rsvg-convert -h 120  -a -f png $b/$f2.svg -o $o/$f2-0120.png # google OAuth
-rsvg-convert -h 128  -a -f png $b/$f2.svg -o $o/$f2-0128.png
-rsvg-convert -h 180  -a -f png $b/$f2.svg -o $o/$f2-0180.png # facebook profile needs this
-rsvg-convert -h 256  -a -f png $b/$f2.svg -o $o/$f2-0256.png
-rsvg-convert -h 256  -a -f png $b/$f2.svg -o $o/$f2-0256.png 
-rsvg-convert -h 600  -a -f png $b/$f1.svg -o $o/$f1-0600.png # foto id da fenix decorare
-rsvg-convert -h 1024 -a -f png $b/$f2.svg -o $o/$f2-1024.png 
-convert -background ${aco[5]} $b/qb.svg -thumbnail 200x200 $o/apple-touch-icon.png
-convert -background none -bordercolor none $b/$f2.svg -thumbnail 200x200 -border 50x50 $o/$f2-gpp.png
-convert -background none -bordercolor none $b/$f1.svg -thumbnail 500x500 -border 50x50 $o/$f1-fid.png
-convert -background none $b/$f2.svg -thumbnail 128x128 $o/icon_128.gif
-convert $o/$f2-0016.png $o/$f2-0032.png $o/$f2-0048.png \
-        $o/$f2-0064.png $o/$f2-0128.png $o/$f2-0256.png \
+# para apple devices apple-touch-icon.png,icon_128.gif,favicon.ico
+rsvg-convert -h 16   -a -f png $b/$f4.svg -o $t/$f4-0016.png
+rsvg-convert -h 32   -a -f png $b/$f4.svg -o $t/$f4-0032.png
+rsvg-convert -h 48   -a -f png $b/$f2.svg -o $t/$f2-0048.png
+rsvg-convert -h 64   -a -f png $b/$f2.svg -o $t/$f2-0064.png
+rsvg-convert -h 75   -a -f png $b/$f2.svg -o $t/$f2-0075.png # facebook app
+rsvg-convert -h 120  -a -f png $b/$f2.svg -o $t/$f2-0120.png # google OAuth
+rsvg-convert -h 128  -a -f png $b/$f2.svg -o $t/$f2-0128.png
+rsvg-convert -h 180  -a -f png $b/$f2.svg -o $t/$f2-0180.png # facebook profile needs this
+rsvg-convert -h 256  -a -f png $b/$f2.svg -o $t/$f2-0256.png 
+rsvg-convert -h 600  -a -f png $b/$f1.svg -o $t/$f1-0600.png # foto id da fenix decorare
+rsvg-convert -h 1024 -a -f png $b/$f2.svg -o $t/$f2-1024.png 
+
+#Usada para conversao -> png optimizadas
+convert $cpng $t/$f4-0016.png $o/$f4-0016.png
+convert $cpng $t/$f4-0032.png $o/$f4-0032.png
+convert $cpng $t/$f2-0048.png $o/$f2-0048.png
+convert $cpng $t/$f2-0064.png $o/$f2-0064.png
+convert $cpng $t/$f2-0075.png $o/$f2-0075.png
+convert $cpng $t/$f2-0120.png $o/$f2-0120.png
+convert $cpng $t/$f2-0128.png $o/$f2-0128.png
+convert $cpng $t/$f2-0180.png $o/$f2-0180.png
+convert $cpng $t/$f2-0256.png $o/$f2-0256.png
+convert $cpng $t/$f1-0600.png $o/$f1-0600.png
+convert $cpng $t/$f2-1024.png $o/$f2-1024.png
+
+convert -background ${aco[5]}              $b/qb.svg  $cpng -thumbnail 152x152               $o/apple-touch-icon.png
+convert -background none -bordercolor none $b/$f2.svg $cpng -thumbnail 200x200 -border 50x50 $o/$f2-gpp.png
+convert -background none -bordercolor none $b/$f1.svg $cpng -thumbnail 500x500 -border 50x50 $o/$f1-fid.png
+convert -background none                   $b/$f2.svg       -thumbnail 128x128 $o/icon_128.gif
+convert $o/$f4-0016.png $o/$f4-0032.png \
         $o/favicon.ico
 
 # Logos redes sociais x32
-rsvg-convert -h 24 -a -f png $c/sf.svg  -o $o/sf.png
-rsvg-convert -h 24 -a -f png $c/sg.svg  -o $o/sg.png
-rsvg-convert -h 24 -a -f png $c/sl.svg  -o $o/sl.png
-rsvg-convert -h 24 -a -f png $c/st.svg  -o $o/st.png
-rsvg-convert -h 24 -a -f png $c/sy.svg  -o $o/sy.png
+rsvg-convert -h 24 -a -f svg $c/sf.svg|svgo -i - -o $i/sf.svg
+rsvg-convert -h 24 -a -f svg $c/sg.svg|svgo -i - -o $i/sg.svg
+rsvg-convert -h 24 -a -f svg $c/sl.svg|svgo -i - -o $i/sl.svg
+rsvg-convert -h 24 -a -f svg $c/st.svg|svgo -i - -o $i/st.svg
+rsvg-convert -h 24 -a -f svg $c/sy.svg|svgo -i - -o $i/sy.svg
+gzip -cfq9 $i/sf.svg > $i/sf.svgz
+gzip -cfq9 $i/sg.svg > $i/sg.svgz
+gzip -cfq9 $i/sl.svg > $i/sl.svgz
+gzip -cfq9 $i/st.svg > $i/st.svgz
+gzip -cfq9 $i/sy.svg > $i/sy.svgz
 
 # Composicoes loja used by spree 176x82  
-rsvg-convert -h 82 -a      -f png $c/$l3.svg -o $o/logo-loja-casadosquadros.png
-rsvg-convert -h 40 -a      -f png $c/$l3.svg -o $o/logo-loja-casadosquadros-admin.png
-rsvg-convert               -f png $b/$i1.svg -o $o/cart.png
+rsvg-convert -h 82 -a      -f png $c/$l3.svg -o     $o/logo-loja-casadosquadros.png
+rsvg-convert -h 40 -a      -f png $c/$l3.svg -o     $o/logo-loja-casadosquadros-admin.png
+convert $cjpg $o/logo-loja-casadosquadros.png       $v/logo-loja-casadosquadros.jpg
+convert $cjpg $o/logo-loja-casadosquadros-admin.png $v/logo-loja-casadosquadros-admin.jpg
+
+# Criar versao svg optimizada para frontend 
+# svgz precisa content-encoding http header set gzip in aws
+rsvg-convert -h 82 -a      -f svg $c/$l3.svg|svgo -i - -o $i/logo-loja-casadosquadros.svg
+gzip -cfq9 $i/logo-loja-casadosquadros.svg              > $i/logo-loja-casadosquadros.svgz
+
 # Composicao google-api-logo  max120x60
 #rsvg-convert -w 119 -a     -f png $c/$l3.svg -o $o/$l3-ga.png
 # Composicoes loja used by spree noimage
-clet=${aco[7]}
-rsvg-convert -a     -h 240 -f png $b/$f1.svg -o $t/$f1-pr.png
+clet=${aco[5]}
+rsvg-convert -a     -h 240 -f png $b/$f2.svg -o $t/$f1-pr.png
 ./preplet.sh imagem la t240 h120 $clet
 ./preplet.sh "não existe" la t240 h120 $clet
 convert $o/panão_existe.png $o/paimagem.png \
 	-gravity center -append $t/pr.png
-composite -dissolve 25% -gravity center \
+composite $cpng -dissolve 25% -gravity center \
         $t/$f1-pr.png  $t/pr.png $o/product.png 
-composite -dissolve 25% -gravity center \
+composite $cpng -dissolve 25% -gravity center \
         $t/$f1-pr.png  $t/pr.png $o/large.png 
-rsvg-convert -a     -h 100 -f png $b/$f1.svg -o $t/$f1-pr.png
+convert $cjpg $o/product.png $v/product.jpg
+convert $cjpg $o/large.png $v/large.jpg
+rsvg-convert -a     -h 100 -f png $b/$f2.svg -o $t/$f1-pr.png
 ./preplet.sh imagem la t100 h50 $clet
 ./preplet.sh "não existe" la t100 h50 $clet
 convert $o/panão_existe.png $o/paimagem.png \
 	-gravity center -append $t/pr.png
-composite -dissolve 25% -gravity center \
+composite $cpng -dissolve 25% -gravity center \
         $t/$f1-pr.png  $t/pr.png $o/small.png 
-rsvg-convert -a     -h 48  -f png $b/$f1.svg -o $t/$f1-pr.png
+convert $cjpg $o/small.png $v/small.jpg
+rsvg-convert -a     -h 48  -f png $b/$f2.svg -o $t/$f1-pr.png
 ./preplet.sh imagem la t48 h24 $clet
 ./preplet.sh "não existe" la t48 h24 $clet
 convert $o/panão_existe.png $o/paimagem.png \
 	-gravity center -append $t/pr.png
-composite -dissolve 25% -gravity center \
-        $t/$f1-pr.png  $t/pr.png $o/mini.png 
+composite $cpng -dissolve 25% -gravity center \
+        $t/$f1-pr.png  $t/pr.png $o/mini.png
+convert $cjpg $o/mini.png $v/mini.jpg
 rm $o/paimagem.png $o/panão_existe.png
 
 # Composição access report x400
 rsvg-convert -h 400 -a      -f png $c/$l2.svg -o $o/$l2-go.png
-convert $o/$l2-go.png -background white -flatten $o/$l2-go.jpg
+convert $o/$l2-go.png -background white -flatten $v/$l2-go.jpg
 rm $o/$l2-go.png
 
 exit
@@ -836,7 +859,7 @@ convert -background none $c/$l2.svg -thumbnail 396x90 $o/$l2-fl.gif
 #tablet  1536x350
 #mobile  1280x350
 rsvg-convert               -f png $c/$l3.svg -o $t/$l3-yt.png
-convert $t/$l3-yt.png -background white -flatten $o/$l3-yt.jpg
+convert $t/$l3-yt.png -background white -flatten $v/$l3-yt.jpg
 
 # Composicao logo comunidade navbar tem x50 
 # com estes -h da x46 em ambos png,svg
@@ -846,7 +869,7 @@ rsvg-convert -a -h 37  -f svg $c/$l1.svg -o $t/cfpt-logo.svg
 
 # Composicao blog x200
 #rsvg-convert -h 200 -a     -f png $c/$l2.svg -o $t/$l2-bl.png
-#convert $t/$l2-bl.png -background white -flatten $o/bg1.jpg
+#convert $t/$l2-bl.png -background white -flatten $v/bg1.jpg
 
 # Composicao botoes doar fenix 80x64, paypal 73x26 
 rsvg-convert               -f png $c/$l4.svg -o $o/$l4-doar.png

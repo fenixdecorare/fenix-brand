@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.2"
    width="600"
    height="600"
@@ -15,7 +16,7 @@
    xml:space="preserve"><metadata
    id="metadata15"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
    id="defs13">
 	
 	
@@ -25,9 +26,11 @@
    transform="translate(3.411,3.037)"
    id="g4256"><path
      d="m -3327.052,2831.92 h 88.428 v 284.508 h -88.428 V 2831.92 z m 44.235,-141.422 c 28.268,0 51.24,22.969 51.24,51.25 0,28.305 -22.973,51.277 -51.24,51.277 -28.342,0 -51.281,-22.973 -51.281,-51.277 0,-28.277 22.939,-51.25 51.281,-51.25"
+     inkscape:connector-curvature="0"
      id="path7"
      style="fill:#333333" /><path
      d="m -3183.157,2831.92 h 84.805 v 38.871 h 1.184 c 11.811,-22.367 40.645,-45.949 83.666,-45.949 89.539,0 106.07,58.93 106.07,135.527 v 156.055 h -88.367 v -138.359 c 0,-32.996 -0.602,-75.43 -45.947,-75.43 -46.006,0 -53.072,35.938 -53.072,73.043 v 140.746 h -88.348 V 2831.92 h 0.01 z"
+     inkscape:connector-curvature="0"
      id="path9"
      style="fill:#333333" /></g>
 </svg>
